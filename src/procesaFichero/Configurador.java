@@ -1,26 +1,28 @@
 package procesaFichero;
 
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Configurador {
 
     private final ArrayList<String> archivos;
     private final ArrayList<String> algoritmos;
     private final ArrayList<String> semillas;
-    private Integer iteraciones;
-    private Integer tenenciaTabu;
-    private double oscilacion;
-    private double estancamiento;
+    private Integer greedy;
+    private ArrayList<Integer> poblacion;
+    private double generacionAleatoria;
     private boolean crearLogs,reemplazarLogs,crearCSV;
 
     public Configurador(String ruta) {
         this.archivos = new ArrayList<>();
         this.algoritmos = new ArrayList<>();
         this.semillas = new ArrayList<>();
+        this.poblacion = new ArrayList<>();
         String linea;
         FileReader f;
         try{
@@ -41,17 +43,19 @@ public class Configurador {
                         String[] valgoritmos = split[1].split(" ");
                         algoritmos.addAll(Arrays.asList(valgoritmos));
                         break;
-                    case "Iteraciones":
-                        iteraciones = Integer.parseInt(split[1]);
+                    case "Greedy":
+                        greedy = Integer.parseInt(split[1]);
                         break;
-                    case "TenenciaTabu":
-                        tenenciaTabu = Integer.parseInt(split[1]);
+                    case "Poblacion":
+                        String[] vpob = split[1].split(" ");
+                        Integer[] vpoblacion = new Integer[vpob.length];
+                        for (int i = 0; i <vpoblacion.length; i++) {
+                            vpoblacion[i] = Integer.parseInt(vpob[i]);
+                        }
+                        poblacion.addAll(List.of(vpoblacion));
                         break;
-                    case "Oscilacion":
-                        oscilacion = Double.parseDouble(split[1]);
-                        break;
-                    case "Estancamiento":
-                        estancamiento = Double.parseDouble(split[1]);
+                    case "GeneracionAleatoria":
+                        generacionAleatoria = Double.parseDouble(split[1]);
                         break;
                     case "CrearLogs":
                         crearLogs = Boolean.parseBoolean(split[1]);
@@ -81,20 +85,8 @@ public class Configurador {
         return semillas;
     }
 
-    public Integer getIteraciones() {
-        return iteraciones;
-    }
-
-    public Integer getTenenciaTabu() {
-        return tenenciaTabu;
-    }
-
-    public double getOscilacion() {
-        return oscilacion;
-    }
-
-    public double getEstancamiento() {
-        return estancamiento;
+    public Integer getGreedy() {
+        return greedy;
     }
 
     public boolean isCrearLogs() {
@@ -107,5 +99,12 @@ public class Configurador {
 
     public boolean isCrearCSV() {
         return crearCSV;
+    }
+    public double getGeneracionAleatoria() {
+        return generacionAleatoria;
+    }
+
+    public ArrayList<Integer> getPoblacion() {
+        return poblacion;
     }
 }

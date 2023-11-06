@@ -14,8 +14,8 @@ import java.util.logging.Logger;
 
 public class LectorDatos {
     private final String ruta;
-    private final double ciudades[][];
-    private final double distancias[][];
+    private final double[][] ciudades;
+    private final double[][] distancias;
     //private final double heuristica[][];
 
     public LectorDatos(String ruta) {
@@ -30,6 +30,7 @@ public class LectorDatos {
             Logger.getLogger(LectorDatos.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        assert f != null;
         BufferedReader b = new BufferedReader(f);
 
         try {
@@ -53,11 +54,7 @@ public class LectorDatos {
         ciudades = new double[tam][2];
 
         try {
-            b.readLine();b.readLine();
-        }catch (IOException ignore){
-        }
-
-        try {
+            b.readLine();
             linea = b.readLine();
         } catch (IOException ex) {
             Logger.getLogger(LectorDatos.class.getName()).log(Level.SEVERE, null, ex);
