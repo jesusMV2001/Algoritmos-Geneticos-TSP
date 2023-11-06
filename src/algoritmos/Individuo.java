@@ -8,10 +8,11 @@ public class Individuo {
     private boolean evaluado;
     private int generacion;
 
-    public Individuo(ArrayList<Integer> solucion, int generacion) {
+    public Individuo(ArrayList<Integer> solucion, int generacion, double[][] distancias) {
         this.solucion = solucion;
         this.evaluado = false;
         this.generacion = generacion;
+        evaluar(distancias);
     }
 
     public void evaluar(double[][] distancias){

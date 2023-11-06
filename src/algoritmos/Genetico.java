@@ -38,7 +38,6 @@ public class Genetico {
         //Aleatorio
         for (int i = 0; i <config.getGeneracionAleatoria()*tamPoblacion; i++) {
             pInicial.addIndividuo(crearIndividuoAleatorio(random));
-            pInicial.getPoblacion().get(i).evaluar(distancias);
         }
 
         //Greedy
@@ -66,7 +65,7 @@ public class Genetico {
             lista.remove(j);
         }
 
-        return new Individuo(solucion,generacion);
+        return new Individuo(solucion,generacion,distancias);
     }
 
     private Individuo crearIndividuoGreedy(Random random){
@@ -81,9 +80,7 @@ public class Genetico {
             solucion.add(mapaOrdenado.get(random.nextInt(0,Math.min(config.getGreedy(),mapaOrdenado.size()))));
         }
 
-        Individuo nuevo = new Individuo(solucion,generacion);
-        nuevo.evaluar(distancias);
-        return nuevo;
+        return new Individuo(solucion,generacion,distancias);
     }
 
     private static ArrayList<Integer> ordenarMapa(Map<Integer, Double> mapa, ArrayList<Integer> sol) {
