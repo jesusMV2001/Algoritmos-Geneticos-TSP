@@ -9,7 +9,7 @@ public class Main {
         LectorDatos l = new LectorDatos("pr144.tsp");
         Configurador c = new Configurador(args[0]);
 
-        Genetico g = new Genetico(l.getDistancias(),l.getCiudades(),c,c.getPoblacion().get(0));
+        Genetico g = new Genetico(l.getDistancias(),l.getCiudades(),c,c.getPoblacion().get(0),c.getElite().get(1),c.getKbest().get(0),c.getCruces().get(0));
 
         g.ejecutar(2);
 

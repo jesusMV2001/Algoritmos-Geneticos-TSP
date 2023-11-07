@@ -28,6 +28,22 @@ public class Individuo {
         return fitness;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true; // Comprueba si es el mismo objeto en memoria.
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false; // Comprueba si los tipos son diferentes o el objeto es nulo.
+        }
+
+        Individuo otra = (Individuo) obj; // Convierte obj en una instancia de MiClase.
+
+        // Compara los campos para determinar la igualdad.
+        return fitness == otra.fitness && generacion==otra.generacion;
+    }
+
     public ArrayList<Integer> getSolucion() {
         return solucion;
     }
