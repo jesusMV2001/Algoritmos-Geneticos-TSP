@@ -69,12 +69,22 @@ public class Genetico {
                 Individuo p2 = p.getPoblacion().get(i+1);
                 double porciento = random.nextDouble();
 
+                //probabilidad de cruce
                 if(porciento < config.getProbCruce()){
                     Individuo sol1 = cruceOX2(p1,p2,random);
                     Individuo sol2 =cruceOX2(p2,p1,random);
                     cruzada.addIndividuo(sol1);
                     cruzada.addIndividuo(sol2);
                 }else{
+                    //se hace la probabilidad de mutacion para los dos padres
+                    if(random.nextDouble()<config.getProbMutacion()){
+                        dosopt(p1.getSolucion(),random);
+                        p1.evaluar(distancias);
+                    }
+                    if(random.nextDouble()<config.getProbMutacion()){
+                        dosopt(p2.getSolucion(),random);
+                        p2.evaluar(distancias);
+                    }
                     cruzada.addIndividuo(p1);
                     cruzada.addIndividuo(p2);
                 }
