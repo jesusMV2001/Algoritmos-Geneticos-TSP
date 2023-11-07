@@ -6,7 +6,6 @@ import java.util.*;
 
 public class Genetico {
     private final double[][] distancias;
-    private final double[][] ciudades;
     private final Configurador config;
     private final int tamPoblacion;
     private int generacion;
@@ -14,11 +13,10 @@ public class Genetico {
     private final int numElite;
     private final int kbest;
     private List<Individuo> elite;
-    private String cruce;
+    private final String cruce;
 
-    public Genetico(double[][] distancias, double[][] ciudades, Configurador config, int poblacion, int nelite, int kbest, String cruce) {
+    public Genetico(double[][] distancias, Configurador config, int poblacion, int nelite, int kbest, String cruce) {
         this.distancias = distancias;
-        this.ciudades = ciudades;
         this.config = config;
         this.tamPoblacion=poblacion;
         this.generacion=0;
@@ -50,11 +48,16 @@ public class Genetico {
             if(descendientes.getPoblacion().containsAll(elite)){
                 padres = descendientes;
             }else{
-                //TODO añadir elites en descendientes
+                for (Individuo individuo : elite) {
+                    if (!descendientes.getPoblacion().contains(individuo)) {
+                        int index = descendientes.getPoblacion().indexOf(torneo(random, descendientes, config.getKworst(), false));
+                        descendientes.getPoblacion().set(index, individuo);
+                    }
+                }
             }
 
             generacion++;
-            evaluaciones+=tamPoblacion;
+            evaluaciones+=tamPoblacion;//TODO cambiar esto y calcular realmente las evaluaciones que se hacen
         }
 
 
@@ -121,10 +124,10 @@ public class Genetico {
     private Poblacion seleccion(Random random, Poblacion padres){
         Poblacion descendientes = new Poblacion();
         while (descendientes.getPoblacion().size()<tamPoblacion){
-            Individuo p1 = torneo(random, padres);
+            Individuo p1 = torneo(random, padres,kbest,true);
             Individuo p2;
             do {
-                p2 = torneo(random, padres);
+                p2 = torneo(random, padres,kbest,true);
             } while (!p1.equals(p2));
             descendientes.addIndividuo(p1);
             descendientes.addIndividuo(p2);
@@ -139,19 +142,29 @@ public class Genetico {
         sol.set(pos1,aux);
     }
 
-    private Individuo torneo(Random random, Poblacion p){
-        //ArrayList<Integer> aleatorios = new ArrayList<>();
-        double mejor=Double.MAX_VALUE;
-        int posMejor=-1;
-        for (int i = 0; i < kbest; i++) {
-            int r = random.nextInt(0,tamPoblacion);
-            if(mejor>p.getPoblacion().get(r).getFitness()){
-                mejor=p.getPoblacion().get(r).getFitness();
-                posMejor=r;
+    private Individuo torneo(Random random, Poblacion p, int k,boolean buscaMejor){
+        int pos = -1;
+        if(buscaMejor) {
+            double mejor = Double.MAX_VALUE;
+            for (int i = 0; i < k; i++) {
+                int r = random.nextInt(0, tamPoblacion);
+                if (mejor > p.getPoblacion().get(r).getFitness()) {
+                    mejor = p.getPoblacion().get(r).getFitness();
+                    pos = r;
+                }
+            }
+        }else{
+            double mejor = Double.MIN_VALUE;
+            for (int i = 0; i < k; i++) {
+                int r = random.nextInt(0, tamPoblacion);
+                if (mejor < p.getPoblacion().get(r).getFitness()) {
+                    mejor = p.getPoblacion().get(r).getFitness();
+                    pos = r;
+                }
             }
         }
 
-        return p.getPoblacion().get(posMejor);
+        return p.getPoblacion().get(pos);
     }
 
     private Poblacion crearPoblacionInicial(Random random){

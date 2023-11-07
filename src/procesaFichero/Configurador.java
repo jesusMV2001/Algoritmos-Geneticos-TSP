@@ -14,7 +14,7 @@ public class Configurador {
     private final ArrayList<String> algoritmos;
     private final ArrayList<String> semillas;
     private final ArrayList<String> cruces;
-    private Integer greedy,limiteSegundos,evaluaciones;
+    private Integer greedy,limiteSegundos,evaluaciones,kworst;
     private ArrayList<Integer> poblacion,elite,kbest;
     private double generacionAleatoria,probCruce,probSeleccionOX2,probMutacion;
     private boolean crearLogs,reemplazarLogs,crearCSV;
@@ -53,6 +53,9 @@ public class Configurador {
                         break;
                     case "Greedy":
                         greedy = Integer.parseInt(split[1]);
+                        break;
+                    case "KWorst":
+                        kworst = Integer.parseInt(split[1]);
                         break;
                     case "Evaluaciones":
                         evaluaciones = Integer.parseInt(split[1]);
@@ -173,6 +176,10 @@ public class Configurador {
 
     public double getProbMutacion() {
         return probMutacion;
+    }
+
+    public Integer getKworst() {
+        return kworst;
     }
 
     public ArrayList<Integer> getPoblacion() {
