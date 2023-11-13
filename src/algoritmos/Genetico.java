@@ -36,7 +36,7 @@ public class Genetico {
         Poblacion padres = crearPoblacionInicial(random);
         evaluaciones+=tamPoblacion;
 
-        while (evaluaciones<config.getEvaluaciones()) {
+        while (evaluaciones<config.getEvaluaciones()) { //TODO añadir comprobacion de 60 segundos
             //aumenta la generacion en 1
             generacion++;
             //encuentra elites
