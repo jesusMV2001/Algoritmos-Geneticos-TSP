@@ -128,7 +128,7 @@ public class Genetico {
             Individuo p2;
             do {
                 p2 = torneo(random, padres,kbest,true);
-            } while (!p1.equals(p2));
+            } while (p1.equals(p2));
             descendientes.addIndividuo(p1);
             descendientes.addIndividuo(p2);
         }
