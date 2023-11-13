@@ -46,16 +46,13 @@ public class Genetico {
             Poblacion descendientes = cruceMutacion(seleccion(random,padres),random);
 
             //reemplazamiento
-            if(descendientes.getPoblacion().containsAll(elite)){ //si contiene todos los elite reemplaza al padre
+            if(descendientes.getPoblacion().containsAll(elite))//si contiene todos los elite reemplaza al padre
                 padres = descendientes;
-            }else{ //busca que elites no contiene y los añade mediante un torneo con kworst
-                for (Individuo individuo : elite) {
-                    if (!descendientes.getPoblacion().contains(individuo)) {
-                        int index = descendientes.getPoblacion().indexOf(torneo(random, descendientes, config.getKworst(), false));
-                        descendientes.getPoblacion().set(index, individuo);
-                    }
-                }
-            }
+            else //busca que elites no contiene y los añade mediante un torneo con kworst
+                for (Individuo individuo : elite)
+                    if (!descendientes.getPoblacion().contains(individuo))
+                        descendientes.getPoblacion().set(descendientes.getPoblacion().indexOf(torneo(random, descendientes, config.getKworst(), false)), individuo);
+
         }
 
         return buscaElites(padres).get(0);
@@ -100,23 +97,21 @@ public class Genetico {
 
     private Individuo cruceOX2(Individuo p1, Individuo p2, Random random){
         List<Integer> valores = new ArrayList<>();
-        for (int i = 0; i < p1.getSolucion().size(); i++) {
-            if(random.nextDouble()<config.getProbSeleccionOX2()){
+        for (int i = 0; i < p1.getSolucion().size(); i++)
+            if(random.nextDouble()<config.getProbSeleccionOX2())
                 valores.add(p1.getSolucion().get(i));
-            }
-        }
-        ArrayList<Integer> solp2 = p2.getSolucion();
+
+        ArrayList<Integer> solp2 = new ArrayList<>(p2.getSolucion());
 
         int pos=0;
-        for (int i = 0; i < solp2.size(); i++) {
-            if(valores.contains(solp2.get(i))){
+        for (int i = 0; i < solp2.size(); i++)
+            if(valores.contains(solp2.get(i)))
                solp2.set(i,valores.get(pos++));
-            }
-        }
 
-        if(random.nextDouble()<config.getProbMutacion()){
+
+        if(random.nextDouble()<config.getProbMutacion())
             dosopt(solp2,random);
-        }
+
 
         return new Individuo(solp2,generacion,distancias);
     }
@@ -171,14 +166,14 @@ public class Genetico {
         Poblacion pInicial = new Poblacion();
 
         //Aleatorio
-        for (int i = 0; i <config.getGeneracionAleatoria()*tamPoblacion; i++) {
+        for (int i = 0; i <config.getGeneracionAleatoria()*tamPoblacion; i++)
             pInicial.addIndividuo(crearIndividuoAleatorio(random));
-        }
+
 
         //Greedy
-        while(pInicial.getPoblacion().size() != tamPoblacion){
+        while(pInicial.getPoblacion().size() != tamPoblacion)
             pInicial.addIndividuo(crearIndividuoGreedy(random));
-        }
+
 
 
 
@@ -195,9 +190,9 @@ public class Genetico {
 
     private Individuo crearIndividuoAleatorio(Random random){
         ArrayList<Integer> lista=new ArrayList<>();
-        for (int i = 0; i < tamSolucion; i++) {
+        for (int i = 0; i < tamSolucion; i++)
             lista.add(i);
-        }
+
         ArrayList<Integer> solucion = new ArrayList<>();
 
         for (int i = 0; i < tamSolucion; i++) {
@@ -214,9 +209,9 @@ public class Genetico {
 
         for (int i = 0; i < tamSolucion; i++) {
             HashMap<Integer, Double> mejores = new HashMap<>();
-            for (int j = 0; j < distancias[i].length; j++) {
+            for (int j = 0; j < distancias[i].length; j++)
                 mejores.put(j,distancias[i][j]);
-            }
+
             ArrayList<Integer> mapaOrdenado = ordenarMapa(mejores,solucion);
             solucion.add(mapaOrdenado.get(random.nextInt(0,Math.min(config.getGreedy(),mapaOrdenado.size()))));
         }
@@ -232,10 +227,10 @@ public class Genetico {
 
 
         ArrayList<Integer> r = new ArrayList<>();
-        for (Map.Entry<Integer, Double> flujosOrdenado : Ordenados) {
+        for (Map.Entry<Integer, Double> flujosOrdenado : Ordenados)
             if(sol.stream().noneMatch(n-> Objects.equals(n, flujosOrdenado.getKey())))
                 r.add(flujosOrdenado.getKey());
-        }
+
         return r;
     }
 
