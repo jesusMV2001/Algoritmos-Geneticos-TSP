@@ -2,9 +2,11 @@ package algoritmos;
 
 import procesaFichero.Configurador;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
-public class Genetico {
+public class Genetico  {
     private final double[][] distancias;
     private final Configurador config;
     private final int tamPoblacion;
@@ -31,12 +33,15 @@ public class Genetico {
 
     public Individuo ejecutar(long semilla){
         Random random = new Random(semilla);
-
         //crea la poblacion incial y define los elites
         Poblacion padres = crearPoblacionInicial(random);
         evaluaciones+=tamPoblacion;
 
-        while (evaluaciones<config.getEvaluaciones()) { //TODO añadir comprobacion de 60 segundos
+
+        Instant start=Instant.now();
+        Instant end = Instant.now();
+
+        while (evaluaciones<config.getEvaluaciones() && Duration.between(start,end).toMillis()<config.getLimiteSegundos()*1000 ) { //TODO añadir comprobacion de 60 segundos
             //aumenta la generacion en 1
             generacion++;
             //encuentra elites
@@ -53,6 +58,7 @@ public class Genetico {
                     if (!descendientes.getPoblacion().contains(individuo))
                         descendientes.getPoblacion().set(descendientes.getPoblacion().indexOf(torneo(random, descendientes, config.getKworst(), false)), individuo);
 
+            end=Instant.now();
         }
 
         return buscaElites(padres).get(0);
@@ -177,6 +183,7 @@ public class Genetico {
 
 
 
+
         return pInicial;
     }
 
@@ -206,20 +213,30 @@ public class Genetico {
 
     private Individuo crearIndividuoGreedy(Random random){
         ArrayList<Integer> solucion = new ArrayList<>();
+        HashSet<Integer> indicesSeleccionados = new HashSet<>();
 
-        for (int i = 0; i < tamSolucion; i++) {
-            HashMap<Integer, Double> mejores = new HashMap<>();
-            for (int j = 0; j < distancias[i].length; j++)
-                mejores.put(j,distancias[i][j]);
+        int inicio=random.nextInt(0,tamSolucion);
 
-            ArrayList<Integer> mapaOrdenado = ordenarMapa(mejores,solucion);
-            solucion.add(mapaOrdenado.get(random.nextInt(0,Math.min(config.getGreedy(),mapaOrdenado.size()))));
+        Map<Integer, Double> mejores = new HashMap<>();
+        for (int index = inicio; index < tamSolucion+inicio; index++) {
+            int i = index % tamSolucion;
+            mejores.clear();
+            for (int j = 0; j < distancias[i].length; j++) {
+                if (!indicesSeleccionados.contains(j)) {
+                    mejores.put(j, distancias[i][j]);
+                }
+            }
+
+            ArrayList<Integer> mapaOrdenado = ordenarMapa(mejores);
+            int seleccionado = mapaOrdenado.get(random.nextInt(Math.min(config.getGreedy(), mapaOrdenado.size())));
+            solucion.add(seleccionado);
+            indicesSeleccionados.add(seleccionado);
+
         }
-
         return new Individuo(solucion,generacion,distancias);
     }
 
-    private static ArrayList<Integer> ordenarMapa(Map<Integer, Double> mapa, ArrayList<Integer> sol) {
+    private static ArrayList<Integer> ordenarMapa(Map<Integer, Double> mapa) {
         List<Map.Entry<Integer, Double>> Ordenados = mapa.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue())
@@ -228,7 +245,6 @@ public class Genetico {
 
         ArrayList<Integer> r = new ArrayList<>();
         for (Map.Entry<Integer, Double> flujosOrdenado : Ordenados)
-            if(sol.stream().noneMatch(n-> Objects.equals(n, flujosOrdenado.getKey())))
                 r.add(flujosOrdenado.getKey());
 
         return r;

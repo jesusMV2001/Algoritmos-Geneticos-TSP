@@ -14,7 +14,7 @@ public class Main {
         System.out.println(g.ejecutar(77770715).getFitness());
 
 
-        //System.out.println(Arrays.deepToString(l.getDistancias()));
+
 
     }
 }
