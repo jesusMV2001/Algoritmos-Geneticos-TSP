@@ -12,10 +12,12 @@ public class Genetico {
     private final int tamSolucion;
     private final int numElite;
     private final int kbest;
+    private int evaluaciones;
     private List<Individuo> elite;
     private final String cruce;
 
     public Genetico(double[][] distancias, Configurador config, int poblacion, int nelite, int kbest, String cruce) {
+        this.evaluaciones=0;
         this.distancias = distancias;
         this.config = config;
         this.tamPoblacion=poblacion;
@@ -27,27 +29,38 @@ public class Genetico {
         this.cruce = cruce;
     }
 
-    public int[] ejecutar(long semilla){
+    public Individuo ejecutar(long semilla){
         Random random = new Random(semilla);
 
         //crea la poblacion incial y define los elites
         Poblacion padres = crearPoblacionInicial(random);
-        int evaluaciones=tamPoblacion;
+        evaluaciones+=tamPoblacion;
 
         while (evaluaciones<config.getEvaluaciones()) {
+            generacion++;
             //encuentra elites
             elite = buscaElites(padres);
 
             //seleccion
-            Poblacion descendientes = seleccion(random,padres);
+            Poblacion descendientes = new Poblacion();
+            while (descendientes.getPoblacion().size()<tamPoblacion) {
+                Individuo p1 = torneo(random, padres,kbest,true);
+                Individuo p2;
+                do {
+                    p2 = torneo(random, padres,kbest,true);
+                } while (p1.equals(p2));
 
-            //cruce y mutacion
-            descendientes = cruceMutacion(descendientes,random);
+
+                //cruce y mutacion
+                cruceMutacion(descendientes,random,p1,p2);
+            }
+
 
             //reemplazamiento
             if(descendientes.getPoblacion().containsAll(elite)){
                 padres = descendientes;
             }else{
+                //se remplaza mediante torneo los peores por los elites
                 for (Individuo individuo : elite) {
                     if (!descendientes.getPoblacion().contains(individuo)) {
                         int index = descendientes.getPoblacion().indexOf(torneo(random, descendientes, config.getKworst(), false));
@@ -55,47 +68,45 @@ public class Genetico {
                     }
                 }
             }
-
-            generacion++;
-            evaluaciones+=tamPoblacion;//TODO cambiar esto y calcular realmente las evaluaciones que se hacen
         }
 
+        for (int i = 0; i < padres.getPoblacion().size(); i++) {
+            System.out.println(padres.getPoblacion().get(i).getSolucion());
+        }
+        System.out.println(generacion);
 
-        return null;
+        return buscaElites(padres).get(0);
     }
 
-    private Poblacion cruceMutacion(Poblacion p, Random random){
-        Poblacion cruzada = new Poblacion();
+    private void cruceMutacion(Poblacion p, Random random, Individuo p1, Individuo p2){
+        Individuo sol1 = new Individuo(p1.getSolucion(),p1.getGeneracion(),distancias);
+        Individuo sol2 = new Individuo(p2.getSolucion(),p2.getGeneracion(),distancias);
         if(Objects.equals(cruce, "OX2")){
-            for(int i = 0; i<tamPoblacion ; i=i+2){
-                Individuo p1 = p.getPoblacion().get(i);
-                Individuo p2 = p.getPoblacion().get(i+1);
-                double porciento = random.nextDouble();
-
-                //probabilidad de cruce
-                if(porciento < config.getProbCruce()){
-                    Individuo sol1 = cruceOX2(p1,p2,random);
-                    Individuo sol2 =cruceOX2(p2,p1,random);
-                    cruzada.addIndividuo(sol1);
-                    cruzada.addIndividuo(sol2);
-                }else{
-                    //se hace la probabilidad de mutacion para los dos padres
-                    if(random.nextDouble()<config.getProbMutacion()){
-                        dosopt(p1.getSolucion(),random);
-                        p1.evaluar(distancias);
-                    }
-                    if(random.nextDouble()<config.getProbMutacion()){
-                        dosopt(p2.getSolucion(),random);
-                        p2.evaluar(distancias);
-                    }
-                    cruzada.addIndividuo(p1);
-                    cruzada.addIndividuo(p2);
-                }
+            double porciento = random.nextDouble();
+            //probabilidad de cruce
+            if(porciento < config.getProbCruce()){
+                sol1 = cruceOX2(p1,p2,random);
+                sol2 = cruceOX2(p2,p1,random);
+                evaluaciones+=2;
             }
+            //mutacion hijo1
+            if(random.nextDouble()<config.getProbMutacion()){
+                dosopt(sol1.getSolucion(),random);
+                sol1.evaluar(distancias);
+                evaluaciones++;
+            }
+            //mutacion hijo2
+            if(random.nextDouble()<config.getProbMutacion()){
+                dosopt(sol2.getSolucion(),random);
+                sol2.evaluar(distancias);
+                evaluaciones++;
+            }
+        }else{
+            //TODO
         }
-        System.out.println(cruzada.getPoblacion().size());
 
-        return cruzada;
+        p.addIndividuo(sol1);
+        p.addIndividuo(sol2);
     }
 
     private Individuo cruceOX2(Individuo p1, Individuo p2, Random random){
@@ -110,33 +121,20 @@ public class Genetico {
         int pos=0;
         for (int i = 0; i < solp2.size(); i++) {
             if(valores.contains(solp2.get(i))){
-               solp2.set(i,valores.get(pos++));
+                solp2.set(i,valores.get(pos));
+                pos++;
             }
         }
 
-        if(random.nextDouble()<config.getProbMutacion()){
-            dosopt(solp2,random);
-        }
 
         return new Individuo(solp2,generacion,distancias);
     }
-
-    private Poblacion seleccion(Random random, Poblacion padres){
-        Poblacion descendientes = new Poblacion();
-        while (descendientes.getPoblacion().size()<tamPoblacion){
-            Individuo p1 = torneo(random, padres,kbest,true);
-            Individuo p2;
-            do {
-                p2 = torneo(random, padres,kbest,true);
-            } while (!p1.equals(p2));
-            descendientes.addIndividuo(p1);
-            descendientes.addIndividuo(p2);
-        }
-        return descendientes;
-    }
     private void dosopt (ArrayList<Integer> sol,Random random){
         int pos1=random.nextInt(0,sol.size());
-        int pos2=random.nextInt(0,sol.size());
+        int pos2;
+        do{
+            pos2=random.nextInt(0,sol.size());
+        }while (pos1==pos2);
         int aux = sol.get(pos2);
         sol.set(pos2,sol.get(pos1));
         sol.set(pos1,aux);
@@ -154,11 +152,11 @@ public class Genetico {
                 }
             }
         }else{
-            double mejor = Double.MIN_VALUE;
+            double peor = Double.MIN_VALUE;
             for (int i = 0; i < k; i++) {
                 int r = random.nextInt(0, tamPoblacion);
-                if (mejor < p.getPoblacion().get(r).getFitness()) {
-                    mejor = p.getPoblacion().get(r).getFitness();
+                if (peor < p.getPoblacion().get(r).getFitness()) {
+                    peor = p.getPoblacion().get(r).getFitness();
                     pos = r;
                 }
             }

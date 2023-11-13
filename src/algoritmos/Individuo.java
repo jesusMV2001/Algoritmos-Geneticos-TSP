@@ -38,7 +38,7 @@ public class Individuo {
             return false; // Comprueba si los tipos son diferentes o el objeto es nulo.
         }
 
-        Individuo otra = (Individuo) obj; // Convierte obj en una instancia de MiClase.
+        Individuo otra = (Individuo) obj; // Convierte obj en una instancia de Individuo.
 
         // Compara los campos para determinar la igualdad.
         return fitness == otra.fitness && generacion==otra.generacion;
