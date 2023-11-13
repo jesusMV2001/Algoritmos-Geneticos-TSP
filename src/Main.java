@@ -11,7 +11,8 @@ public class Main {
 
         Genetico g = new Genetico(l.getDistancias(),c,c.getPoblacion().get(0),c.getElite().get(1),c.getKbest().get(0),c.getCruces().get(0));
 
-        g.ejecutar(2);
+        System.out.println(g.ejecutar(77770715).getFitness());
+
 
         //System.out.println(Arrays.deepToString(l.getDistancias()));
 

@@ -9,6 +9,10 @@ public class Poblacion {
         this.poblacion = new ArrayList<>();
     }
 
+    public Individuo getIndividuo(int i){
+        return poblacion.get(i);
+    }
+
     public boolean addIndividuo(Individuo i){
         return poblacion.add(i);
     }
