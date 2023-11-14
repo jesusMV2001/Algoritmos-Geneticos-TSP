@@ -44,7 +44,7 @@ public class Genetico  {
         while (evaluaciones<config.getEvaluaciones() && Duration.between(start,end).toMillis()<config.getLimiteSegundos()*1000 ) { //TODO añadir comprobacion de 60 segundos
             //aumenta la generacion en 1
             generacion++;
-            //encuentra elites
+            //encuentra elites de la poblacion de padres
             elite = buscaElites(padres);
 
             //Seleccion, cruce y mutacion
@@ -60,6 +60,19 @@ public class Genetico  {
 
             end=Instant.now();
         }
+
+        ArrayList<Integer> a = new ArrayList<>();
+        for (int i = 1; i < 10; i++) {
+            a.add(i);
+        }
+
+        ArrayList<Integer> b = new ArrayList<>();
+        b.add(9);b.add(3);b.add(7);b.add(8);b.add(2);b.add(6);b.add(5);b.add(1);b.add(4);
+
+        Individuo p1 = new Individuo(a,generacion,distancias);
+        Individuo p2 = new Individuo(b,generacion,distancias);
+        List<Individuo> l= cruceMOC(p1,p2,random);
+        System.out.println(l.get(0).getSolucion());
 
         return buscaElites(padres).get(0);
     }
@@ -99,6 +112,35 @@ public class Genetico  {
         }
 
         return cruzada;
+    }
+
+    private List<Individuo> cruceMOC(Individuo p1, Individuo p2, Random random){
+        ArrayList<Integer> sol1 = new ArrayList<>();
+        ArrayList<Integer> sol2 = new ArrayList<>();
+
+        int puntoCorte = random.nextInt(p1.getSolucion().size());
+
+        ArrayList<Integer> valoresP1 = new ArrayList<>(p1.getSolucion().subList(0,puntoCorte));
+        ArrayList<Integer> valoresP2 = new ArrayList<>(p2.getSolucion().subList(0,puntoCorte));
+
+        extracted(p1, p2, puntoCorte, valoresP2, sol1);
+        extracted(p2, p1, puntoCorte, valoresP1, sol2);
+
+        List<Individuo> devolver = new ArrayList<>();
+        devolver.add(new Individuo(sol1,generacion,distancias));
+        devolver.add(new Individuo(sol2,generacion,distancias));
+
+        return devolver;
+    }
+
+    private static void extracted(Individuo p1, Individuo p2, int puntoCorte, ArrayList<Integer> valoresP2, ArrayList<Integer> sol1) {
+        int pos= puntoCorte;
+
+        for (int i = 0; i < p1.getSolucion().size(); i++)
+            if(!valoresP2.contains(p1.getSolucion().get(i)))
+                sol1.add(p2.getSolucion().get(pos++));
+            else
+                sol1.add(p1.getSolucion().get(i));
     }
 
     private Individuo cruceOX2(Individuo p1, Individuo p2, Random random){
@@ -179,9 +221,6 @@ public class Genetico  {
         //Greedy
         while(pInicial.getPoblacion().size() != tamPoblacion)
             pInicial.addIndividuo(crearIndividuoGreedy(random));
-
-
-
 
 
         return pInicial;
