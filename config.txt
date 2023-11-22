@@ -1,5 +1,6 @@
 Archivos=pr144.tsp d15112.tsp ch130.tsp
 Cruces=OX2 MOC
+OperadorSeleccion=EDA
 Poblacion=50 100
 GeneracionAleatoria=0.8
 Greedy=5
@@ -11,3 +12,4 @@ ProbCruce=0.7
 ProbMutacion=0.1
 Evaluaciones=50000
 LimiteSegundos=60
+DiferencialKBest=2

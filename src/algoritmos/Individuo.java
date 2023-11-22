@@ -7,8 +7,11 @@ public class Individuo {
     private ArrayList<Integer> solucion;
     private boolean evaluado;
     private int generacion;
+    private int indice;
 
-    public Individuo(ArrayList<Integer> solucion, int generacion, double[][] distancias) {
+    public Individuo(ArrayList<Integer> solucion, int generacion, double[][] distancias, int indice) {
+        this.fitness=0;
+        this.indice = indice;
         this.solucion = solucion;
         this.evaluado = false;
         this.generacion = generacion;
@@ -18,8 +21,8 @@ public class Individuo {
     public void evaluar(double[][] distancias){
         evaluado=true;
         double sum=0;
-        for (int i = 0; i < solucion.size(); i++) {
-            sum += distancias[solucion.get(i)][solucion.get((i+1)%solucion.size())];
+        for (int i = 0; i < solucion.size()-1; i++) {
+            sum += distancias[solucion.get(i)][solucion.get(i+1)];
         }
         fitness=sum;
     }
@@ -38,10 +41,8 @@ public class Individuo {
             return false; // Comprueba si los tipos son diferentes o el objeto es nulo.
         }
 
-        Individuo otra = (Individuo) obj; // Convierte obj en una instancia de MiClase.
-
         // Compara los campos para determinar la igualdad.
-        return fitness == otra.fitness && generacion==otra.generacion;
+        return indice==((Individuo) obj).indice;
     }
 
     public ArrayList<Integer> getSolucion() {
@@ -54,5 +55,13 @@ public class Individuo {
 
     public int getGeneracion() {
         return generacion;
+    }
+
+    public int getIndice() {
+        return indice;
+    }
+
+    public void setIndice(int indice) {
+        this.indice = indice;
     }
 }

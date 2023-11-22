@@ -14,12 +14,14 @@ public class Configurador {
     private final ArrayList<String> algoritmos;
     private final ArrayList<String> semillas;
     private final ArrayList<String> cruces;
-    private Integer greedy,limiteSegundos,evaluaciones,kworst;
+    private final ArrayList<String> operadoresSeleccion;
+    private Integer greedy,limiteSegundos,evaluaciones,kworst,diferencialKBest;
     private ArrayList<Integer> poblacion,elite,kbest;
     private double generacionAleatoria,probCruce,probSeleccionOX2,probMutacion;
     private boolean crearLogs,reemplazarLogs,crearCSV;
 
     public Configurador(String ruta) {
+        this.operadoresSeleccion = new ArrayList<>();
         this.cruces=new ArrayList<>();
         this.kbest=new ArrayList<>();
         this.archivos = new ArrayList<>();
@@ -38,6 +40,10 @@ public class Configurador {
                     case "Archivos":
                         String[] v = split[1].split(" ");
                         archivos.addAll(Arrays.asList(v));
+                        break;
+                    case "OperadorSeleccion":
+                        String[] vs = split[1].split(" ");
+                        operadoresSeleccion.addAll(Arrays.asList(vs));
                         break;
                     case "Cruces":
                         String[] c = split[1].split(" ");
@@ -62,6 +68,9 @@ public class Configurador {
                         break;
                     case "LimiteSegundos":
                         limiteSegundos = Integer.parseInt(split[1]);
+                        break;
+                    case "DiferencialKBest":
+                        diferencialKBest = Integer.parseInt(split[1]);
                         break;
                     case "Poblacion":
                         String[] vpob = split[1].split(" ");
@@ -180,6 +189,14 @@ public class Configurador {
 
     public Integer getKworst() {
         return kworst;
+    }
+
+    public ArrayList<String> getOperadoresSeleccion() {
+        return operadoresSeleccion;
+    }
+
+    public Integer getDiferencialKBest() {
+        return diferencialKBest;
     }
 
     public ArrayList<Integer> getPoblacion() {
