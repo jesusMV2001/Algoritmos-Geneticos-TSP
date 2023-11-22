@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class Individuo {
     private double fitness;
-    private ArrayList<Integer> solucion;
+    private final ArrayList<Integer> solucion;
     private boolean evaluado;
-    private int generacion;
+    private final int generacion;
     private int indice;
 
     public Individuo(ArrayList<Integer> solucion, int generacion, double[][] distancias, int indice) {
@@ -16,6 +16,14 @@ public class Individuo {
         this.evaluado = false;
         this.generacion = generacion;
         evaluar(distancias);
+    }
+
+    public Individuo(Individuo copia){
+        this.indice=copia.indice;
+        this.fitness=copia.fitness;
+        this.solucion = new ArrayList<>(copia.getSolucion());
+        this.evaluado=copia.evaluado;
+        this.generacion= copia.generacion;
     }
 
     public void evaluar(double[][] distancias){

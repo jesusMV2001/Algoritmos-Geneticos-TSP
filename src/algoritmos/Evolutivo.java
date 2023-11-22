@@ -30,9 +30,9 @@ public abstract class Evolutivo {
 
     protected Individuo cruceOX2(ArrayList<Integer> p1, ArrayList<Integer> p2, Random random, int indice){
         List<Integer> valores = new ArrayList<>();
-        for (int i = 0; i < p1.size(); i++)
-            if(random.nextDouble()<config.getProbSeleccionOX2())
-                valores.add(p1.get(i));
+        for (Integer integer : p1)
+            if (random.nextDouble() < config.getProbSeleccionOX2())
+                valores.add(integer);
 
         ArrayList<Integer> solp2 = new ArrayList<>(p2);
 

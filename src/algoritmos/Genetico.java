@@ -67,28 +67,45 @@ public class Genetico extends Evolutivo {
                     cruzada.add(sol2);
                     evaluaciones+=2;
                 }else{
-                    Individuo p1 = new Individuo(p.get(i).getSolucion(),generacion,distancias,i);
-                    Individuo p2 = new Individuo(p.get(i).getSolucion(),generacion,distancias,i+1);
-                    //se hace la probabilidad de mutacion para los dos padres
-                    if(random.nextDouble()<config.getProbMutacion()){
-                        dosopt(p1.getSolucion(),random);
-                        p1.evaluar(distancias);
-                        evaluaciones++;
-                    }
-                    if(random.nextDouble()<config.getProbMutacion()){
-                        dosopt(p2.getSolucion(),random);
-                        p2.evaluar(distancias);
-                        evaluaciones++;
-                    }
-                    cruzada.add(p1);
-                    cruzada.add(p2);
+                    cruzada.addAll(creaPadres(p.get(i),p.get(i+1),random));
                 }
             }
         }else{//MOC
-            //TODO MOC
+            for(int i = 0; i<tamPoblacion ; i=i+2) {
+                //probabilidad de cruce
+                if (random.nextDouble() < config.getProbCruce()) {
+                    List<Individuo> sol1 = cruceMOC(p.get(i), p.get(i + 1), random, i);
+                    cruzada.addAll(sol1);
+                    evaluaciones += 2;
+                } else {
+                    cruzada.addAll(creaPadres(p.get(i),p.get(i+1),random));
+                }
+            }
         }
 
         return cruzada;
+    }
+
+    private List<Individuo> creaPadres(Individuo padre1, Individuo padre2, Random random){
+        List<Individuo> devolver= new ArrayList<>();
+        Individuo p1 = new Individuo(padre1);
+        Individuo p2 = new Individuo(padre2);
+        //se hace la probabilidad de mutacion para los dos padres
+        if (random.nextDouble() < config.getProbMutacion()) {
+            dosopt(p1.getSolucion(), random);
+            p1.evaluar(distancias);
+            evaluaciones++;
+        }
+        if (random.nextDouble() < config.getProbMutacion()) {
+            dosopt(p2.getSolucion(), random);
+            p2.evaluar(distancias);
+            evaluaciones++;
+        }
+
+        devolver.add(p1);
+        devolver.add(p2);
+
+        return devolver;
     }
 
     private List<Individuo> cruceMOC(Individuo p1, Individuo p2, Random random,int i){
@@ -102,6 +119,11 @@ public class Genetico extends Evolutivo {
 
         extracted(p1, p2, puntoCorte, valoresP2, sol1);
         extracted(p2, p1, puntoCorte, valoresP1, sol2);
+
+        if(random.nextDouble()<config.getProbMutacion())
+            dosopt(sol1,random);
+        if(random.nextDouble()<config.getProbMutacion())
+            dosopt(sol2,random);
 
         List<Individuo> devolver = new ArrayList<>();
         devolver.add(new Individuo(sol1,generacion,distancias,i));
@@ -135,12 +157,28 @@ public class Genetico extends Evolutivo {
     }
 
     private List<Individuo> buscaElites(ArrayList<Individuo> p){
-        //TODO CAMBIAR Y QUE RECORRA LA LISTA Y CREAR NUEVOS INDIVIDUOS CON EL NEW NO GUARDAR UNA REFERENCIA
         //define elites
-        Comparator<Individuo> comparador = Comparator.comparingDouble(Individuo::getFitness);
-        ArrayList<Individuo> copiaArrayList = new ArrayList<>(p);
-        copiaArrayList.sort(comparador);
-        return copiaArrayList.subList(0,numElite);
+
+        List<Individuo> result = new ArrayList<>(p.subList(0, numElite));
+
+        for (int i = numElite; i < p.size(); i++) {
+            Individuo elementoActual = p.get(i);
+
+            Individuo menorDeLosMayores = result.stream().min(Comparator.comparing(Individuo::getFitness)).orElseThrow();
+
+            if (elementoActual.getFitness() > menorDeLosMayores.getFitness()) {
+                result.remove(menorDeLosMayores);
+                result.add(elementoActual);
+            }
+        }
+
+        List<Individuo> devolver = new ArrayList<>();
+        for (Individuo indv:result){
+            devolver.add(new Individuo(indv));
+        }
+
+
+        return devolver;
     }
 
 }
