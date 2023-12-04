@@ -18,7 +18,7 @@ LimiteSegundos=60
 DiferencialKBest=2
 
 IncluirSolucionLogs=False
-MostrarPoblacionCompletaDiferencialLogs=False
+MostrarPoblacionCompletaLogs=True
 CrearLogs=True
 ReemplazarLogs=True
 CrearCSV=True

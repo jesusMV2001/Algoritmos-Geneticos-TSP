@@ -57,7 +57,11 @@ public class Genetico extends Evolutivo {
             //reemplaza la poblacion de padres
             padres = descendientes;
 
-            log.append("Evaluaciones acumuladas: ").append(evaluaciones).append("\n").append("Elites: \n").append(crearJSON((ArrayList<Individuo>) elite));
+            log.append("Evaluaciones acumuladas: ").append(evaluaciones).append("\n").append("Elites: \n");
+            if(config.isMostrarPoblacionCompletaLogs())
+                log.append(crearJSON(padres));
+            else
+                log.append(crearJSON((ArrayList<Individuo>) elite));
             logs.add(log.toString());
             log = new StringBuilder();
 

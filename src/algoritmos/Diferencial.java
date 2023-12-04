@@ -89,7 +89,7 @@ public class Diferencial extends Evolutivo {
         try {
             objectMapper.setFilterProvider(filterProvider);
 
-            if(config.isMostrarPoblacionCompletaDiferencialLogs())
+            if(config.isMostrarPoblacionCompletaLogs())
                 return objectMapper.writeValueAsString(p);
             else{
                 Individuo menorDeLosMayores = p.stream().min(Comparator.comparing(Individuo::getFitness)).orElseThrow();
