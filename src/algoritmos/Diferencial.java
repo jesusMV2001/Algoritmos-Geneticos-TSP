@@ -12,7 +12,6 @@ import java.util.*;
 
 public class Diferencial extends Evolutivo {
     private final int  PADRE,OBJETIVO,ALEATORIO1,ALEATORIO2;
-    private int evaluaciones;
     private final String operadorSeleccion;
 
     public Diferencial(double[][] distancias, Configurador config, int poblacion, String operadorSeleccion) {

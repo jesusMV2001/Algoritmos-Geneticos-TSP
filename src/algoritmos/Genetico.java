@@ -110,7 +110,9 @@ public class Genetico extends Evolutivo {
                     cruzada.add(sol2);
                     evaluaciones+=2;
                 }else{
-                    cruzada.addAll(creaPadres(p.get(i),p.get(i+1),random,i));
+                    mutaPadres(p.get(i),p.get(i+1),random);
+                    cruzada.add(p.get(i));
+                    cruzada.add(p.get(i+1));
                 }
             }
         }else{//MOC
@@ -121,7 +123,9 @@ public class Genetico extends Evolutivo {
                     cruzada.addAll(sol1);
                     evaluaciones += 2;
                 } else {
-                    cruzada.addAll(creaPadres(p.get(i),p.get(i+1),random,i));
+                    mutaPadres(p.get(i),p.get(i+1),random);
+                    cruzada.add(p.get(i));
+                    cruzada.add(p.get(i+1));
                 }
             }
         }
@@ -129,29 +133,18 @@ public class Genetico extends Evolutivo {
         return cruzada;
     }
 
-    private List<Individuo> creaPadres(Individuo padre1, Individuo padre2, Random random, int i){
-        List<Individuo> devolver= new ArrayList<>();
-        Individuo p1 = new Individuo(padre1);
-        Individuo p2 = new Individuo(padre2);
+    private void mutaPadres(Individuo padre1, Individuo padre2, Random random){
         //se hace la probabilidad de mutacion para los dos padres
         if (random.nextDouble() < config.getProbMutacion()) {
-            dosopt(p1.getSolucion(), random);
-            p1.evaluar(distancias);
+            dosopt(padre1.getSolucion(), random);
+            padre1.evaluar(distancias);
             evaluaciones++;
         }
         if (random.nextDouble() < config.getProbMutacion()) {
-            dosopt(p2.getSolucion(), random);
-            p2.evaluar(distancias);
+            dosopt(padre2.getSolucion(), random);
+            padre2.evaluar(distancias);
             evaluaciones++;
         }
-
-        p1.setIndice(i);
-        p2.setIndice(i+1);
-
-        devolver.add(p1);
-        devolver.add(p2);
-
-        return devolver;
     }
 
     private List<Individuo> cruceMOC(Individuo p1, Individuo p2, Random random,int i){
