@@ -46,7 +46,7 @@ public abstract class Evolutivo {
             if(valores.contains(solp2.get(i)))
                 solp2.set(i,valores.get(pos++));
 
-
+        //compueba si se hace mutacion
         if(random.nextDouble()<config.getProbMutacion())
             dosopt(solp2,random);
 
@@ -62,7 +62,7 @@ public abstract class Evolutivo {
         sol.set(pos1,aux);
     }
 
-    protected abstract String crearJSON();
+    protected abstract String crearJSON(ArrayList<Individuo> p);
 
     protected Individuo torneo(Random random, ArrayList<Individuo> p, int k,boolean buscaMejor){
         int pos = -1;

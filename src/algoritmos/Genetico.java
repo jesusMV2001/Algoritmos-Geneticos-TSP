@@ -30,7 +30,7 @@ public class Genetico extends Evolutivo {
         //crea la poblacion incial y define los elites
         ArrayList<Individuo> padres = crearPoblacionInicial(random);
         evaluaciones+=tamPoblacion;
-
+        StringBuilder log= new StringBuilder();
 
         Instant start=Instant.now();
         Instant end = Instant.now();
@@ -38,20 +38,28 @@ public class Genetico extends Evolutivo {
         while (evaluaciones<config.getEvaluaciones() && Duration.between(start,end).toMillis()<config.getLimiteSegundos()*1000 ) {
             //aumenta la generacion en 1
             generacion++;
+            log.append("Generacion actual: ").append(generacion).append("\n");
             //encuentra elites de la poblacion de padres
             elite = buscaElites(padres);
+
 
             //Seleccion, cruce y mutacion
             ArrayList<Individuo> descendientes = cruceMutacion(seleccion(random,padres),random);
 
+            //comprueba si estan los elites, sino los añade a la poblacion
             for (Individuo individuo : elite)
                 if (!descendientes.contains(individuo)) {
-                    descendientes.set(torneo(random, descendientes, config.getKworst(), false).getIndice(), individuo);
-
+                    int index = torneo(random, descendientes, config.getKworst(), false).getIndice();
+                    individuo.setIndice(index);
+                    descendientes.set(index, individuo);
                 }
 
+            //reemplaza la poblacion de padres
             padres = descendientes;
-            logs.add(crearJSON());
+
+            log.append("Evaluaciones acumuladas: ").append(evaluaciones).append("\n").append("Elites: \n").append(crearJSON((ArrayList<Individuo>) elite));
+            logs.add(log.toString());
+            log = new StringBuilder();
 
             end=Instant.now();
         }
@@ -60,7 +68,7 @@ public class Genetico extends Evolutivo {
     }
 
     @Override
-    protected String crearJSON(){
+    protected String crearJSON(ArrayList<Individuo> p){
         ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
         // Crear un filtro dinámico
         SimpleFilterProvider filterProvider = new SimpleFilterProvider();
@@ -73,9 +81,9 @@ public class Genetico extends Evolutivo {
 
         try {
             objectMapper.setFilterProvider(filterProvider);
-            return objectMapper.writeValueAsString(elite);
+            return objectMapper.writeValueAsString(p);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -95,13 +103,14 @@ public class Genetico extends Evolutivo {
 
                 //probabilidad de cruce
                 if(random.nextDouble() < config.getProbCruce()){
+                    //se crean los dos hijos
                     Individuo sol1 = cruceOX2(p.get(i).getSolucion(),p.get(i+1).getSolucion(),random,i);
                     Individuo sol2 = cruceOX2(p.get(i+1).getSolucion(),p.get(i).getSolucion(),random,i+1);
                     cruzada.add(sol1);
                     cruzada.add(sol2);
                     evaluaciones+=2;
                 }else{
-                    cruzada.addAll(creaPadres(p.get(i),p.get(i+1),random));
+                    cruzada.addAll(creaPadres(p.get(i),p.get(i+1),random,i));
                 }
             }
         }else{//MOC
@@ -112,7 +121,7 @@ public class Genetico extends Evolutivo {
                     cruzada.addAll(sol1);
                     evaluaciones += 2;
                 } else {
-                    cruzada.addAll(creaPadres(p.get(i),p.get(i+1),random));
+                    cruzada.addAll(creaPadres(p.get(i),p.get(i+1),random,i));
                 }
             }
         }
@@ -120,7 +129,7 @@ public class Genetico extends Evolutivo {
         return cruzada;
     }
 
-    private List<Individuo> creaPadres(Individuo padre1, Individuo padre2, Random random){
+    private List<Individuo> creaPadres(Individuo padre1, Individuo padre2, Random random, int i){
         List<Individuo> devolver= new ArrayList<>();
         Individuo p1 = new Individuo(padre1);
         Individuo p2 = new Individuo(padre2);
@@ -135,6 +144,9 @@ public class Genetico extends Evolutivo {
             p2.evaluar(distancias);
             evaluaciones++;
         }
+
+        p1.setIndice(i);
+        p2.setIndice(i+1);
 
         devolver.add(p1);
         devolver.add(p2);
@@ -204,8 +216,12 @@ public class Genetico extends Evolutivo {
             }
         }
 
+        List<Individuo> devolver = new ArrayList<>();
+        for (Individuo individuo:result) {
+            devolver.add(new Individuo(individuo));
+        }
 
-        return new ArrayList<>(result);
+        return devolver;
     }
 
 }

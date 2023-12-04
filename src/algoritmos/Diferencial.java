@@ -1,5 +1,9 @@
 package algoritmos;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import procesaFichero.Configurador;
 
 import java.time.Duration;
@@ -25,7 +29,7 @@ public class Diferencial extends Evolutivo {
         //crea la poblacion incial y define los elites
         ArrayList<Individuo> poblacion = crearPoblacionInicial(random);
         evaluaciones+=tamPoblacion;
-
+        StringBuilder log= new StringBuilder();
 
         Instant start=Instant.now();
         Instant end = Instant.now();
@@ -34,7 +38,7 @@ public class Diferencial extends Evolutivo {
         while (evaluaciones<config.getEvaluaciones() && Duration.between(start,end).toMillis()<config.getLimiteSegundos()*100 ) {
             //aumenta la generacion en 1
             generacion++;
-
+            log.append("Generacion actual: ").append(generacion).append("\n");
 
             for (int i = 0; i < tamPoblacion; i++) {
                 //Seleccion
@@ -51,9 +55,11 @@ public class Diferencial extends Evolutivo {
                 //Reemplazamiento
                 if(hijo.getFitness()<poblacion.get(i).getFitness()) //el hijo mejora al padre y sustituye al padre
                     poblacion.set(i,hijo);
-
             }
 
+            log.append("Evaluaciones acumuladas: ").append(evaluaciones).append("\n").append(crearJSON(poblacion));
+            logs.add(log.toString());
+            log = new StringBuilder();
 
             end=Instant.now();
         }
@@ -70,7 +76,29 @@ public class Diferencial extends Evolutivo {
     }
 
     @Override
-    protected String crearJSON() {
+    protected String crearJSON(ArrayList<Individuo> p) {
+        ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        // Crear un filtro dinámico
+        SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+        if (!config.isIncluirSolucionLogs())
+            filterProvider.addFilter("dynamicFilter",
+                    SimpleBeanPropertyFilter.serializeAllExcept("solucion"));
+        else
+            filterProvider.addFilter("dynamicFilter",
+                    SimpleBeanPropertyFilter.serializeAll());
+
+        try {
+            objectMapper.setFilterProvider(filterProvider);
+
+            if(config.isMostrarPoblacionCompletaDiferencialLogs())
+                return objectMapper.writeValueAsString(p);
+            else{
+                Individuo menorDeLosMayores = p.stream().min(Comparator.comparing(Individuo::getFitness)).orElseThrow();
+                return objectMapper.writeValueAsString(menorDeLosMayores);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         return null;
     }
 
@@ -99,7 +127,6 @@ public class Diferencial extends Evolutivo {
         return elegidos;
     }
 
-    //TODO PROBAR QUE FUNCIONA BIEN
     private Individuo recombinacionTernaria(ArrayList<Individuo> p, Random random, List<Integer> elegidos, int indice){
         int corte = random.nextInt(0,tamSolucion-1);
 

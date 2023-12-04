@@ -2,7 +2,7 @@ Archivos=ch130.tsp
 Algoritmos=genetico diferencial
 Cruces=OX2 MOC
 OperadorSeleccion=EDA EDB
-Semillas=77770715
+Semillas=07157777
 Poblacion=50 100
 PoblacionDiferencial=100
 GeneracionAleatoria=0.8
@@ -18,9 +18,10 @@ LimiteSegundos=60
 DiferencialKBest=2
 
 IncluirSolucionLogs=False
+MostrarPoblacionCompletaDiferencialLogs=False
 CrearLogs=True
 ReemplazarLogs=True
 CrearCSV=True
 
 pr144.tsp
-77707157 77071577 70715777 07157777
+77770715 77707157 77071577 70715777 07157777

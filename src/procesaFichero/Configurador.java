@@ -16,9 +16,9 @@ public class Configurador {
     private final ArrayList<String> cruces;
     private final ArrayList<String> operadoresSeleccion;
     private Integer poblacionDiferencial,greedy,limiteSegundos,evaluaciones,kworst,diferencialKBest;
-    private ArrayList<Integer> poblacion,elite,kbest;
+    private final ArrayList<Integer> poblacion,elite,kbest;
     private double generacionAleatoria,probCruce,probSeleccionOX2,probMutacion;
-    private boolean crearLogs,reemplazarLogs,crearCSV,incluirSolucionLogs;
+    private boolean crearLogs,reemplazarLogs,crearCSV,incluirSolucionLogs,mostrarPoblacionCompletaDiferencialLogs;
 
     public Configurador(String ruta) {
         this.operadoresSeleccion = new ArrayList<>();
@@ -123,6 +123,9 @@ public class Configurador {
                     case "IncluirSolucionLogs":
                         incluirSolucionLogs = Boolean.parseBoolean(split[1]);
                         break;
+                    case "MostrarPoblacionCompletaDiferencialLogs":
+                        mostrarPoblacionCompletaDiferencialLogs = Boolean.parseBoolean(split[1]);
+                        break;
                 }
             }
 
@@ -211,6 +214,10 @@ public class Configurador {
 
     public boolean isIncluirSolucionLogs() {
         return incluirSolucionLogs;
+    }
+
+    public boolean isMostrarPoblacionCompletaDiferencialLogs() {
+        return mostrarPoblacionCompletaDiferencialLogs;
     }
 
     public Integer getPoblacionDiferencial() {

@@ -3,11 +3,13 @@ package algoritmos;
 
 import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @JsonFilter("dynamicFilter")
 public class Individuo {
     private double fitness;
     private final ArrayList<Integer> solucion;
+    @JsonIgnore
     private boolean evaluado;
     private final int generacion;
     private int indice;
