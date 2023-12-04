@@ -37,6 +37,7 @@ public class Individuo {
         for (int i = 0; i < solucion.size()-1; i++) {
             sum += distancias[solucion.get(i)][solucion.get(i+1)];
         }
+        sum+=distancias[solucion.get(solucion.size()-1)][solucion.get(0)];
         fitness=sum;
     }
 
