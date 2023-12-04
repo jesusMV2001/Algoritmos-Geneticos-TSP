@@ -25,10 +25,6 @@ public abstract class Evolutivo {
         this.tamSolucion=distancias.length;
     }
 
-    public Individuo ejecutar(Long semilla){
-        return null;
-    }
-
     public abstract Individuo ejecutar(long semilla);
 
     public abstract void limpiar();
@@ -36,7 +32,7 @@ public abstract class Evolutivo {
     protected Individuo cruceOX2(ArrayList<Integer> p1, ArrayList<Integer> p2, Random random, int indice){
         List<Integer> valores = new ArrayList<>();
         for (Integer integer : p1)
-            if (random.nextDouble() < config.getProbSeleccionOX2())
+                if (random.nextDouble() < config.getProbSeleccionOX2())
                 valores.add(integer);
 
         ArrayList<Integer> solp2 = new ArrayList<>(p2);

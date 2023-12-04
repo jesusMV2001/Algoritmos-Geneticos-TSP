@@ -163,8 +163,8 @@ public class Genetico extends Evolutivo {
         ArrayList<Integer> valoresP1 = new ArrayList<>(p1.getSolucion().subList(0,puntoCorte));
         ArrayList<Integer> valoresP2 = new ArrayList<>(p2.getSolucion().subList(0,puntoCorte));
 
-        extracted(p1, p2, puntoCorte, valoresP2, sol1);
-        extracted(p2, p1, puntoCorte, valoresP1, sol2);
+        intercambio(p1, p2, puntoCorte, valoresP2, sol1);
+        intercambio(p2, p1, puntoCorte, valoresP1, sol2);
 
         if(random.nextDouble()<config.getProbMutacion())
             dosopt(sol1,random);
@@ -178,7 +178,7 @@ public class Genetico extends Evolutivo {
         return devolver;
     }
 
-    private static void extracted(Individuo p1, Individuo p2, int puntoCorte, ArrayList<Integer> valoresP2, ArrayList<Integer> sol1) {
+    private static void intercambio(Individuo p1, Individuo p2, int puntoCorte, ArrayList<Integer> valoresP2, ArrayList<Integer> sol1) {
         int pos= puntoCorte;
 
         for (int i = 0; i < p1.getSolucion().size(); i++)
