@@ -1,7 +1,10 @@
 package algoritmos;
 
-import java.util.ArrayList;
 
+import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("dynamicFilter")
 public class Individuo {
     private double fitness;
     private final ArrayList<Integer> solucion;
@@ -71,5 +74,13 @@ public class Individuo {
 
     public void setIndice(int indice) {
         this.indice = indice;
+    }
+
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
+    }
+
+    public void setEvaluado(boolean evaluado) {
+        this.evaluado = evaluado;
     }
 }

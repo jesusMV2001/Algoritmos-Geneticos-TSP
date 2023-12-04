@@ -1,11 +1,13 @@
 package algoritmos;
 
+import netscape.javascript.JSObject;
 import procesaFichero.Configurador;
 
 import java.util.*;
 
 public abstract class Evolutivo {
 
+    public ArrayList<String> logs;
     protected int tamPoblacion;
     protected Configurador config;
     protected  double[][] distancias;
@@ -14,6 +16,7 @@ public abstract class Evolutivo {
     protected int tamSolucion;
 
     public Evolutivo(double[][] distancias, Configurador config, int poblacion){
+        this.logs = new ArrayList<>();
         this.config=config;
         this.generacion=0;
         this.evaluaciones=0;
@@ -27,6 +30,8 @@ public abstract class Evolutivo {
     }
 
     public abstract Individuo ejecutar(long semilla);
+
+    public abstract void limpiar();
 
     protected Individuo cruceOX2(ArrayList<Integer> p1, ArrayList<Integer> p2, Random random, int indice){
         List<Integer> valores = new ArrayList<>();
@@ -56,6 +61,8 @@ public abstract class Evolutivo {
         sol.set(pos2,sol.get(pos1));
         sol.set(pos1,aux);
     }
+
+    protected abstract String crearJSON();
 
     protected Individuo torneo(Random random, ArrayList<Individuo> p, int k,boolean buscaMejor){
         int pos = -1;

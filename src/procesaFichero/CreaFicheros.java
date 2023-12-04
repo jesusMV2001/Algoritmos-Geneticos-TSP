@@ -2,13 +2,15 @@ package procesaFichero;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreaFicheros {
     public CreaFicheros() {
     }
 
-    public void fichero(ArrayList<String> logs, String semilla, String archivo, String algoritmo, Configurador config) {
-        String nombre = "logs/"+ algoritmo +"_"+ semilla +"_"+ archivo +"_log.txt";
+    public void fichero(ArrayList<String> logs, String combinacion, Configurador config) {
+        String nombre = "logs/"+ combinacion+"_log.txt";
 
         try {
             File f = new File(nombre);
@@ -38,10 +40,11 @@ public class CreaFicheros {
                 bufferedWriter.newLine();
             }
             bufferedWriter.close();
+            fileWriter.close();
         }
     }
 
-    public void crearCSV(Configurador config, ArrayList<double [][]> datos, int filas, int cols){
+    public void crearCSV(Configurador config, HashMap<String,double[][]> datos, int filas, int cols){
 
 
         try{
@@ -49,20 +52,23 @@ public class CreaFicheros {
             FileWriter fichero = new FileWriter("salida.txt");
             PrintWriter pw = new PrintWriter(fichero);
 
-            for (int i = 0; i < config.getAlgoritmos().size(); i++) {
-                pw.print(config.getAlgoritmos().get(i) + ","); // Nombre tabla
+            for (Map.Entry<String, double[][]> entry : datos.entrySet()) {
+                pw.print(entry.getKey() + ","); // Nombre tabla
                 for (int j = 0; j < cols / 2; j++) pw.print("Solucion,Tiempo,"); // Cabecera tabla
                 //Datos
                 pw.println();
                 for (int j = 0; j < filas; j++){
                     pw.print("Ejecucion_" + (j+1) + ",");
                     for (int k = 0; k < cols; k++) {
-                        pw.print(datos.get(i)[j][k] + ",");
+                        pw.print(entry.getValue()[j][k] + ",");
                     }
                     pw.println();
                 }
                 pw.println();
             }
+
+            pw.close();
+            fichero.close();
 
         } catch (Exception ignore) {
         }

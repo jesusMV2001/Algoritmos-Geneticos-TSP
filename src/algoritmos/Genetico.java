@@ -1,6 +1,10 @@
 package algoritmos;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import procesaFichero.Configurador;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -40,18 +44,48 @@ public class Genetico extends Evolutivo {
             //Seleccion, cruce y mutacion
             ArrayList<Individuo> descendientes = cruceMutacion(seleccion(random,padres),random);
 
-            //reemplazamiento
-            if(descendientes.containsAll(elite))//si contiene todos los elite reemplaza al padre
-                padres = descendientes;
-            else //busca que elites no contiene y los añade mediante un torneo con kworst
-                for (Individuo individuo : elite)
-                    if (!descendientes.contains(individuo))
-                        descendientes.set(descendientes.indexOf(torneo(random, descendientes, config.getKworst(), false)), individuo);
+            for (Individuo individuo : elite)
+                if (!descendientes.contains(individuo)) {
+                    descendientes.set(torneo(random, descendientes, config.getKworst(), false).getIndice(), individuo);
+
+                }
+
+            padres = descendientes;
+            logs.add(crearJSON());
 
             end=Instant.now();
         }
 
-        return buscaElites(padres).get(0);
+        return elite.get(0);
+    }
+
+    @Override
+    protected String crearJSON(){
+        ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        // Crear un filtro dinámico
+        SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+        if (!config.isIncluirSolucionLogs())
+            filterProvider.addFilter("dynamicFilter",
+                    SimpleBeanPropertyFilter.serializeAllExcept("solucion"));
+        else
+            filterProvider.addFilter("dynamicFilter",
+                    SimpleBeanPropertyFilter.serializeAll());
+
+        try {
+            objectMapper.setFilterProvider(filterProvider);
+            return objectMapper.writeValueAsString(elite);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void limpiar() {
+        elite.clear();
+        logs.clear();
+        evaluaciones=0;
+        generacion=0;
     }
 
     private ArrayList<Individuo> cruceMutacion(ArrayList<Individuo> p, Random random){
@@ -157,8 +191,6 @@ public class Genetico extends Evolutivo {
     }
 
     private List<Individuo> buscaElites(ArrayList<Individuo> p){
-        //define elites
-
         List<Individuo> result = new ArrayList<>(p.subList(0, numElite));
 
         for (int i = numElite; i < p.size(); i++) {
@@ -172,13 +204,8 @@ public class Genetico extends Evolutivo {
             }
         }
 
-        List<Individuo> devolver = new ArrayList<>();
-        for (Individuo indv:result){
-            devolver.add(new Individuo(indv));
-        }
 
-
-        return devolver;
+        return new ArrayList<>(result);
     }
 
 }

@@ -1,7 +1,10 @@
-Archivos=pr144.tsp d15112.tsp ch130.tsp
+Archivos=ch130.tsp
+Algoritmos=genetico diferencial
 Cruces=OX2 MOC
-OperadorSeleccion=EDA
+OperadorSeleccion=EDA EDB
+Semillas=77770715
 Poblacion=50 100
+PoblacionDiferencial=100
 GeneracionAleatoria=0.8
 Greedy=5
 Elite=1 2
@@ -13,3 +16,11 @@ ProbMutacion=0.1
 Evaluaciones=50000
 LimiteSegundos=60
 DiferencialKBest=2
+
+IncluirSolucionLogs=False
+CrearLogs=True
+ReemplazarLogs=True
+CrearCSV=True
+
+pr144.tsp
+77707157 77071577 70715777 07157777

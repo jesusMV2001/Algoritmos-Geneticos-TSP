@@ -62,6 +62,18 @@ public class Diferencial extends Evolutivo {
         return poblacion.stream().min(Comparator.comparing(Individuo::getFitness)).orElse(null);
     }
 
+    @Override
+    public void limpiar() {
+        logs.clear();
+        evaluaciones=0;
+        generacion=0;
+    }
+
+    @Override
+    protected String crearJSON() {
+        return null;
+    }
+
     private List<Integer> operadorSeleccionEDB(ArrayList<Individuo> p, Random random, int padre){
         List<Integer> elegidos = new ArrayList<>();
         elegidos.add(padre);

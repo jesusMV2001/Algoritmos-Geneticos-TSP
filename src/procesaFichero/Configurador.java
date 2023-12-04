@@ -15,10 +15,10 @@ public class Configurador {
     private final ArrayList<String> semillas;
     private final ArrayList<String> cruces;
     private final ArrayList<String> operadoresSeleccion;
-    private Integer greedy,limiteSegundos,evaluaciones,kworst,diferencialKBest;
+    private Integer poblacionDiferencial,greedy,limiteSegundos,evaluaciones,kworst,diferencialKBest;
     private ArrayList<Integer> poblacion,elite,kbest;
     private double generacionAleatoria,probCruce,probSeleccionOX2,probMutacion;
-    private boolean crearLogs,reemplazarLogs,crearCSV;
+    private boolean crearLogs,reemplazarLogs,crearCSV,incluirSolucionLogs;
 
     public Configurador(String ruta) {
         this.operadoresSeleccion = new ArrayList<>();
@@ -59,6 +59,9 @@ public class Configurador {
                         break;
                     case "Greedy":
                         greedy = Integer.parseInt(split[1]);
+                        break;
+                    case "PoblacionDiferencial":
+                        poblacionDiferencial = Integer.parseInt(split[1]);
                         break;
                     case "KWorst":
                         kworst = Integer.parseInt(split[1]);
@@ -116,6 +119,9 @@ public class Configurador {
                         break;
                     case "CrearCSV":
                         crearCSV = Boolean.parseBoolean(split[1]);
+                        break;
+                    case "IncluirSolucionLogs":
+                        incluirSolucionLogs = Boolean.parseBoolean(split[1]);
                         break;
                 }
             }
@@ -201,5 +207,13 @@ public class Configurador {
 
     public ArrayList<Integer> getPoblacion() {
         return poblacion;
+    }
+
+    public boolean isIncluirSolucionLogs() {
+        return incluirSolucionLogs;
+    }
+
+    public Integer getPoblacionDiferencial() {
+        return poblacionDiferencial;
     }
 }
