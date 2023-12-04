@@ -36,9 +36,9 @@ public class Genetico extends Evolutivo {
         Instant end = Instant.now();
 
         while (evaluaciones<config.getEvaluaciones() && Duration.between(start,end).toMillis()<config.getLimiteSegundos()*1000 ) {
+            log.append("Generacion actual: ").append(generacion).append("\n").append("Evaluaciones acumuladas: ").append(evaluaciones).append("\n").append("Elites: \n");
             //aumenta la generacion en 1
             generacion++;
-            log.append("Generacion actual: ").append(generacion).append("\n");
             //encuentra elites de la poblacion de padres
             elite = buscaElites(padres);
 
@@ -57,7 +57,6 @@ public class Genetico extends Evolutivo {
             //reemplaza la poblacion de padres
             padres = descendientes;
 
-            log.append("Evaluaciones acumuladas: ").append(evaluaciones).append("\n").append("Elites: \n");
             if(config.isMostrarPoblacionCompletaLogs())
                 log.append(crearJSON(padres));
             else
@@ -205,20 +204,15 @@ public class Genetico extends Evolutivo {
         for (int i = numElite; i < p.size(); i++) {
             Individuo elementoActual = p.get(i);
 
-            Individuo menorDeLosMayores = result.stream().min(Comparator.comparing(Individuo::getFitness)).orElseThrow();
+            Individuo mayorDeLosMenores = result.stream().min(Comparator.comparing(Individuo::getFitness)).orElseThrow();
 
-            if (elementoActual.getFitness() > menorDeLosMayores.getFitness()) {
-                result.remove(menorDeLosMayores);
+            if (elementoActual.getFitness() < mayorDeLosMenores.getFitness()) {
+                result.remove(mayorDeLosMenores);
                 result.add(elementoActual);
             }
         }
 
-        List<Individuo> devolver = new ArrayList<>();
-        for (Individuo individuo:result) {
-            devolver.add(new Individuo(individuo));
-        }
-
-        return devolver;
+       return result;
     }
 
 }

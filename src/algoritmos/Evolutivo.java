@@ -32,7 +32,7 @@ public abstract class Evolutivo {
     protected Individuo cruceOX2(ArrayList<Integer> p1, ArrayList<Integer> p2, Random random, int indice){
         List<Integer> valores = new ArrayList<>();
         for (Integer integer : p1)
-                if (random.nextDouble() < config.getProbSeleccionOX2())
+            if (random.nextDouble() < config.getProbSeleccionOX2())
                 valores.add(integer);
 
         ArrayList<Integer> solp2 = new ArrayList<>(p2);
@@ -62,6 +62,7 @@ public abstract class Evolutivo {
 
     protected Individuo torneo(Random random, ArrayList<Individuo> p, int k,boolean buscaMejor){
         int pos = -1;
+
         if(buscaMejor) {
             double mejor = Double.MAX_VALUE;
             for (int i = 0; i < k; i++) {
@@ -72,11 +73,11 @@ public abstract class Evolutivo {
                 }
             }
         }else{
-            double mejor = Double.MIN_VALUE;
+            double peor = Double.MIN_VALUE;
             for (int i = 0; i < k; i++) {
                 int r = random.nextInt(0, tamPoblacion);
-                if (mejor < p.get(r).getFitness()) {
-                    mejor = p.get(r).getFitness();
+                if (peor < p.get(r).getFitness()) {
+                    peor = p.get(r).getFitness();
                     pos = r;
                 }
             }
